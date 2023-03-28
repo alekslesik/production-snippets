@@ -29,8 +29,11 @@ func main() {
 	log.Print("Logger inititalizing.")
 	logger := logger.GetLogger(cfg)
 
-	// app, err := app.NewApp(cfg, &logger)
-	// if err != nil {
-	// 	logger.Fatal()
-	// }
+	a, err := app.NewApp(cfg, &logger)
+	if err != nil {
+		logger.Fatal().Err(err)
+	}
+
+	logger.Info().Msg("Running application")
+	a.Run()
 }
