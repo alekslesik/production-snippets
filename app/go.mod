@@ -4,7 +4,6 @@ go 1.20
 
 require (
 	github.com/ilyakaznacheev/cleanenv v1.4.2
-	github.com/julienschmidt/httprouter v1.3.0
 	github.com/rs/zerolog v1.29.0
 )
 
@@ -18,7 +17,6 @@ require (
 require (
 	github.com/BurntSushi/toml v1.1.0 // indirect
 	github.com/KyleBanks/depth v1.2.1 // indirect
-	github.com/go-chi/chi v4.1.2+incompatible
 	github.com/go-openapi/jsonpointer v0.19.6 // indirect
 	github.com/go-openapi/jsonreference v0.20.2 // indirect
 	github.com/go-openapi/spec v0.20.8 // indirect

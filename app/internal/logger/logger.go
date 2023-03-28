@@ -2,6 +2,7 @@ package logger
 
 import (
 	"production-snippets/internal/config"
+	"time"
 
 	"github.com/natefinch/lumberjack"
 	"github.com/rs/zerolog"
@@ -20,8 +21,11 @@ func GetLogger(cfg *config.Config) zerolog.Logger {
 		Compress:   cfg.LoggerSruct.Compress,
 	})
 
-	z = z.With().Caller().Timestamp().Logger()
-	Logger = z
+	zerolog.TimeFieldFormat = time.DateTime
+
+	
+
+	z = z.With().Caller().Time("time", time.Now()).Logger()
 	
 	return z
 }

@@ -1,6 +1,8 @@
 package app
 
 import (
+	"context"
+	"errors"
 	"fmt"
 	"net"
 	"net/http"
@@ -8,6 +10,7 @@ import (
 	"path"
 	"path/filepath"
 	"production-snippets/internal/config"
+	"time"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/rs/cors"
@@ -18,39 +21,53 @@ import (
 
 // Create app struct
 type App struct {
-	cfg    *config.Config
-	logger *zerolog.Logger
+	cfg        *config.Config
+	logger     *zerolog.Logger
+	router     *chi.Mux
+	httpServer *http.Server
 }
 
 // Return new instance of app
 func NewApp(config *config.Config, logger *zerolog.Logger) (App, error) {
-	logger.Print("Router initializing")
+	logger.Info().Msg("Router initializing")
 	router := chi.NewRouter()
 
-	logger.Print("Swager docs initializing")
+	logger.Info().Msg("Swager docs initializing")
 	// Swagger handler
 	router.Get("/swagger/*", httpSwagger.Handler(
-		httpSwagger.URL("http://golang.fvds.ru:6666/swagger/doc.json"), //The url pointing to API definition
+		httpSwagger.URL("http://golang.fvds.ru:10000/swagger/doc.json"), //The url pointing to API definition
 	))
+
+	router.Get("/", func (w http.ResponseWriter, r *http.Request)  {
+		fmt.Fprint(w, "hello")
+	})
 
 	app := App{
 		cfg:    config,
 		logger: logger,
+		router: router,
 	}
 
 	return app, nil
 }
 
-func startHTTP(a *App) {
+func (a *App) Run() {
+	a.startHTTP()
+}
+
+func (a *App) startHTTP() {
 	a.logger.Info().Msg("Start HTTP")
 
 	var listener net.Listener
 
-	if a.cfg.Listen.Type == "sock" {
+	if a.cfg.Listen.Type == config.LISTEN_TYPE_SOCK {
+		// Take current dir
 		appDir, err := filepath.Abs(filepath.Dir(os.Args[0]))
 		if err != nil {
 			a.logger.Fatal().Err(err)
 		}
+
+		// Create socket file
 		socketPath := path.Join(appDir, a.cfg.Listen.SocketFile)
 		a.logger.Info().Msgf("Socket path: %s", socketPath)
 
@@ -60,7 +77,7 @@ func startHTTP(a *App) {
 			a.logger.Fatal().Err(err)
 		}
 	} else {
-		a.logger.Info().Msgf("bind application to host: %s and port: %s", a.cfg.Listen.BindIP, a.cfg.Listen.Port)
+		a.logger.Info().Msgf("Bind application to host: %s and port: %s", a.cfg.Listen.BindIP, a.cfg.Listen.Port)
 		var err error
 		listener, err = net.Listen("tcp", fmt.Sprintf("%s:%s", a.cfg.Listen.BindIP, a.cfg.Listen.Port))
 		if err != nil {
@@ -68,16 +85,42 @@ func startHTTP(a *App) {
 		}
 	}
 
-	// c := cors.New(cors.Options{
-	// 	AllowedMethods:     []string{http.MethodGet, http.MethodPost, http.MethodPatch, http.MethodPut, http.MethodOptions, http.MethodDelete},
-	// 	AllowedOrigins:     []string{"http://localhost:6666", "http://localhost:8080"},
-	// 	AllowCredentials:   true,
-	// 	AllowedHeaders:     []string{"Location", "Charset", "Access-Control-Allow-Origin", "Content-Type", "content-type", "Origin", "Accept", "Content-Length", "Accept-Encoding", "X-CSRF-Token"},
-	// 	OptionsPassthrough: true,
-	// 	ExposedHeaders:     []string{"Location", "Authorization", "Content-Disposition"},
-	// 	// Enable Debugging for testing, consider disabling in production
-	// 	Debug: false,
-	// })
-	
+	// Configure CORS
+	c := cors.New(cors.Options{
+		AllowedMethods:     []string{http.MethodGet, http.MethodPost, http.MethodPatch, http.MethodPut, http.MethodOptions, http.MethodDelete},
+		AllowedOrigins:     []string{"http://localhost:10000", "http://localhost:8080"},
+		AllowCredentials:   true,
+		AllowedHeaders:     []string{"Location", "Charset", "Access-Control-Allow-Origin", "Content-Type", "content-type", "Origin", "Accept", "Content-Length", "Accept-Encoding", "X-CSRF-Token"},
+		OptionsPassthrough: true,
+		ExposedHeaders:     []string{"Location", "Authorization", "Content-Disposition"},
+		// Enable Debugging for testing, consider disabling in production
+		Debug: false,
+	})
+
+	handler := c.Handler(a.router)
+
+	a.httpServer = &http.Server{
+		Handler:      handler,
+		WriteTimeout: 15 * time.Second,
+		ReadTimeout:  15 * time.Second,
+	}
+
+	a.logger.Info().Msg("Application completely initialized and started")
+
+	// Start server
+	if err := a.httpServer.Serve(listener); err != nil {
+		switch {
+		case errors.Is(err, http.ErrServerClosed):
+			a.logger.Warn().Msg("Server shutdown")
+		default:
+			a.logger.Fatal().Err(err)
+		}
+
+	}
+
+	err := a.httpServer.Shutdown(context.Background())
+	if err != nil {
+		a.logger.Fatal().Err(err)
+	}
 
 }
