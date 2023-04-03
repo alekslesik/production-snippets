@@ -2,3 +2,4 @@
 *.log
 /app/build
 .DS_Store
+info.txt
