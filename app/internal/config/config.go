@@ -29,6 +29,14 @@ type Config struct {
 		MaxAge     int    `env:"LOG_MAXAGE" env-default:"24"`
 		Compress   bool   `env:"LOG_COMPRESS" env-default:"true"`
 	}
+	PostgreSQL struct {
+		Username string `env:"PSQL_USERNAME" env-required:"true"`
+		Password string `env:"PSQL_PASSWORD" env-required:"true"`
+		Host     string `env:"PSQL_HOST" env-required:"true"`
+		Port     string `env:"PSQL_PORT" env-required:"true"`
+		Database string `env:"PSQL_DATABASE" env-required:"true" `
+	}
+
 	IsDebug       bool `env:"IS_DEBUG" env-default:"false"`
 	IsDevelopment bool `env:"IS_DEV" env-default:"true"`
 }

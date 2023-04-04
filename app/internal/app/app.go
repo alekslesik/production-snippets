@@ -38,7 +38,7 @@ func NewApp(config *config.Config, logger *zerolog.Logger) (App, error) {
 		httpSwagger.URL("http://golang.fvds.ru:10000/swagger/doc.json"), //The url pointing to API definition
 	))
 
-	router.Get("/", func (w http.ResponseWriter, r *http.Request)  {
+	router.Get("/", func(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprint(w, "hello")
 	})
 

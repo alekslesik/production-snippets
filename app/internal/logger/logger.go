@@ -23,9 +23,7 @@ func GetLogger(cfg *config.Config) zerolog.Logger {
 
 	zerolog.TimeFieldFormat = time.DateTime
 
-	
-
 	z = z.With().Caller().Time("time", time.Now()).Logger()
-	
+
 	return z
 }
