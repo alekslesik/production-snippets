@@ -1,18 +1,21 @@
-package logger
+package logging
 
 import (
+	"os"
 	"production-snippets/internal/config"
 	"time"
 
 	"github.com/natefinch/lumberjack"
 	"github.com/rs/zerolog"
+	"github.com/rs/zerolog/log"
 )
 
-// Logger is global logger
-var Logger zerolog.Logger
+type Logger struct {
+	zerolog.Logger
+}
 
 // Return new zerologer
-func GetLogger(cfg *config.Config) zerolog.Logger {
+func GetLogger(cfg *config.Config) Logger {
 	z := zerolog.New(&lumberjack.Logger{
 		Filename:   cfg.LoggerSruct.Filename,
 		MaxSize:    cfg.LoggerSruct.MaxSize,
@@ -21,9 +24,11 @@ func GetLogger(cfg *config.Config) zerolog.Logger {
 		Compress:   cfg.LoggerSruct.Compress,
 	})
 
+	log.Logger = log.Output(zerolog.ConsoleWriter{Out: os.Stderr})
+
 	zerolog.TimeFieldFormat = time.DateTime
 
 	z = z.With().Caller().Time("time", time.Now()).Logger()
 
-	return z
+	return Logger{z}
 }

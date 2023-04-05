@@ -7,7 +7,7 @@ import (
 	"github.com/ilyakaznacheev/cleanenv"
 )
 
-// Create config
+// Create config struct
 type Config struct {
 	Listen struct {
 		Type       string `env:"LISTEN_TYPE" env-default:"port" env-description:"Port or Sock"`
@@ -34,7 +34,7 @@ type Config struct {
 		Password string `env:"PSQL_PASSWORD" env-required:"true"`
 		Host     string `env:"PSQL_HOST" env-required:"true"`
 		Port     string `env:"PSQL_PORT" env-required:"true"`
-		Database string `env:"PSQL_DATABASE" env-required:"true" `
+		Database string `env:"PSQL_DATABASE" env-required:"true"`
 	}
 
 	IsDebug       bool `env:"IS_DEBUG" env-default:"false"`

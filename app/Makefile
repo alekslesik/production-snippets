@@ -57,7 +57,6 @@ confirm:
 run: 
 	go run ./cmd/app
 
-
 ## db/psql: connect to the database using psql
 .PHONY: db/psql
 db/psql:

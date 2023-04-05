@@ -6,20 +6,12 @@ import (
 	"log"
 	"time"
 
-	"github.com/jackc/pgconn"
-	"github.com/jackc/pgx/v4"
+	// "github.com/jackc/pgconn"
+	// "github.com/jackc/pgx/v4"
 	"github.com/jackc/pgx/v4/pgxpool"
 )
 
-type Client interface {
-	Begin(context.Context) (pgx.Tx, error)
-	BeginFunc(ctx context.Context, f func(pgx.Tx) error) error
-	BeginTxFunc(ctx context.Context, txOptions pgx.TxOptions, f func(pgx.Tx) error) error
-	Query(ctx context.Context, sql string, args ...interface{}) (pgx.Rows, error)
-	QueryRow(ctx context.Context, sql string, args ...interface{}) pgx.Row
-	Exec(ctx context.Context, sql string, arguments ...interface{}) (pgconn.CommandTag, error)
-}
-
+// Config struct
 type pgConfig struct {
 	Username string
 	Password string
@@ -48,7 +40,7 @@ func NewClient(ctx context.Context, maxAttempts int, maxDelay time.Duration, cfg
 	)
 
 	err = DoWithAttempts(func() error {
-		ctx, cancel := context.WithTimeout(ctx, 5*time.Second)
+		ctx, cancel := context.WithTimeout(ctx, 1*time.Second)
 		defer cancel()
 
 		pgxCfg, err := pgxpool.ParseConfig(dsn)
@@ -56,12 +48,9 @@ func NewClient(ctx context.Context, maxAttempts int, maxDelay time.Duration, cfg
 			log.Fatalf("Unable to parse config: %v\n", err)
 		}
 
-		// pgxCfg.ConnConfig.Logger = logrusadapter.NewLogger(logger)
-
 		pool, err = pgxpool.ConnectConfig(ctx, pgxCfg)
 		if err != nil {
-			log.Println("Failed to connect to postgres... Going to do the next attempt")
-
+			// log.Println("Failed to connect to postgres... Going to do the next attempt")
 			return err
 		}
 
@@ -69,12 +58,13 @@ func NewClient(ctx context.Context, maxAttempts int, maxDelay time.Duration, cfg
 	}, maxAttempts, maxDelay)
 
 	if err != nil {
-		log.Fatal("All attempts are exceeded. Unable to connect to postgres")
+		return nil, err
 	}
 
 	return pool, nil
 }
 
+// Execute function with counts of attempts
 func DoWithAttempts(fn func() error, maxAttempts int, delay time.Duration) error {
 	var err error
 

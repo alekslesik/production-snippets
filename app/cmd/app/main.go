@@ -1,10 +1,9 @@
 package main
 
 import (
-	"log"
 	"production-snippets/internal/app"
 	"production-snippets/internal/config"
-	"production-snippets/internal/logger"
+	"production-snippets/internal/logging"
 )
 
 // @title Swagger Example API
@@ -23,11 +22,8 @@ import (
 // @BasePath /v2
 
 func main() {
-	log.Print("Config inititalizing.")
 	cfg := config.GetConfig()
-
-	log.Print("Logger inititalizing.")
-	logger := logger.GetLogger(cfg)
+	logger := logging.GetLogger(cfg)
 
 	a, err := app.NewApp(cfg, &logger)
 	if err != nil {
