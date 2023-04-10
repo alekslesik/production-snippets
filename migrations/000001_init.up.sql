@@ -33,7 +33,7 @@ CREATE TABLE public.currency
 CREATE TABLE public.category
 (
     id SERIAL PRIMARY KEY,
-    name TEXT,
+    name TEXT
 );
 
 -- products --
@@ -46,20 +46,29 @@ CREATE TABLE public.product
     price BIGINT,
     currency_id INT,
     rating INT,
-    category_id INT NOT NULL,
+    category_id INT REFERENCES public.category(id),
     specification JSONB,
     image_id UUID,
-    created_at TIMESTAMPTZ,
-    updated_at TIMESTAMPTZ
+    created_at TIMESTAMPTZ DEFAULT NOW(),
+    updated_at TIMESTAMPTZ DEFAULT NOW(),
+    CONSTRAINT positive_price CHECK (price > 0),
+    CONSTRAINT valid_rating CHECK (rating <= 5)
 );
 
 -- DATA --
 
-insert into public.currency (name, symbol)
-values ('ruble', 'R');
+INSERT INTO public.currency (name, symbol)
+VALUES ('ruble', 'R');
 
-insert into public.currency (name, symbol)
-values ('dollar', '$');
+INSERT INTO public.currency (name, symbol)
+VALUES ('dollar', '$');
+
+INSERT INTO public.category (name)
+VALUES ('coupons');
+
+INSERT INTO public.category (name)
+VALUES ('tickets');
+
 
 
 COMMIT;

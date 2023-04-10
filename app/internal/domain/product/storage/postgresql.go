@@ -6,6 +6,7 @@ import (
 	"production-snippets/internal/logging"
 
 	"github.com/Masterminds/squirrel"
+	"github.com/rs/zerolog/log"
 )
 
 type ProductStorage struct {
@@ -35,6 +36,7 @@ func (s *ProductStorage) All(ctx context.Context) ([]model.Prooduct, error) {
 		Column("descrition").
 		Column("price").
 		Column("currency_id").
+		Column("rating").
 		Column("image_id").
 		Column("created_at").
 		Column("updated_at").
@@ -64,14 +66,16 @@ func (s *ProductStorage) All(ctx context.Context) ([]model.Prooduct, error) {
 			&p.Name, 
 			&p.Descrition, 
 			&p.Price, 
-			&p.CurrencyId, 
+			&p.CurrencyId,
+			&p.Rating,
 			&p.ImageId, 
 			&p.CreatedAt, 
 			&p.UpdatedAt,
 		)
 		
 		if err != nil {
-			s.logger.Err(err).Msg("Scan Error")
+			s.logger.Error().Msgf("%v", err)
+			log.Error().Msgf("%v", err)
 			return nil, err
 		}
 

@@ -10,6 +10,7 @@ import (
 	"path"
 	"path/filepath"
 	"production-snippets/internal/config"
+	"production-snippets/internal/domain/product/storage"
 	"production-snippets/internal/logging"
 	"production-snippets/pkg/client/postgresql"
 	"time"
@@ -58,6 +59,14 @@ func NewApp(config *config.Config, logger *logging.Logger) (App, error) {
 	if err != nil {
 		logger.Fatal().Err(err)
 	}
+
+	productStorage := storage.NewProductStorage(pgClient, logger)
+	all, err := productStorage.All(context.Background())
+	if err != nil {
+		log.Err(err)
+	}
+
+	log.Debug().Msgf("%v", all)
 
 	app := App{
 		cfg:      config,
@@ -142,5 +151,4 @@ func (a *App) startHTTP() {
 	if err != nil {
 		a.logger.Fatal().Err(err)
 	}
-
 }

@@ -30,11 +30,11 @@ type Config struct {
 		Compress   bool   `env:"LOG_COMPRESS" env-default:"true"`
 	}
 	PostgreSQL struct {
-		Username string `env:"PSQL_USERNAME" env-required:"true"`
-		Password string `env:"PSQL_PASSWORD" env-required:"true"`
-		Host     string `env:"PSQL_HOST" env-required:"true"`
-		Port     string `env:"PSQL_PORT" env-required:"true"`
-		Database string `env:"PSQL_DATABASE" env-required:"true"`
+		Username string `env:"PSQL_USERNAME" env-default:"production_snippets"`
+		Password string `env:"PSQL_PASSWORD" env-default:"486464"`
+		Host     string `env:"PSQL_HOST" env-default:"localhost"`
+		Port     string `env:"PSQL_PORT" env-default:"5432"`
+		Database string `env:"PSQL_DATABASE" env-default:"production_snippets"`
 	}
 
 	IsDebug       bool `env:"IS_DEBUG" env-default:"false"`
@@ -47,8 +47,6 @@ var once sync.Once
 // Return instance of config
 func GetConfig() *Config {
 	once.Do(func() {
-		log.Print("Gather config")
-
 		instance = &Config{}
 
 		if err := cleanenv.ReadEnv(instance); err != nil {

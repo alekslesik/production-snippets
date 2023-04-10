@@ -1,39 +1,6 @@
 # Include variables from the .envrc file
 include .envrc
 
-APP_DIR = app/
-APP_BIN = app/build/app
-
-.PHONY: lint
-lint:
-	golangci-lint run
-
-.PHONY: build
-build: clean $(APP_BIN)
-
-$(APP_BIN):
-	go build -o $(APP_BIN) ./app/cmd/app/main.go
-
-.PHONY: clean
-clean:
-	rm -rf ./app/build || true
-
-.PHONY: swagger
-swagger:
-	swag init -g ./app/cmd/app/main.go -o ./app/docs
-
-.PHONY: migrate
-migrate:
-	$(APP_BIN) migrate -version $(version)
-
-.PHONY: migrate.down
-migrate.down:
-	$(APP_BIN) migrate -seq down
-
-.PHONY: migrate.up
-migrate.up:
-	$(APP_BIN) migrate -seq up
-
 #=====================================#
 # HELPERS #
 #=====================================#
@@ -52,27 +19,40 @@ confirm:
 # DEVELOPMENT #
 #=====================================#
 
-## run/api: run the cmd/app application
+## run: run the cmd/app application
 .PHONY: run
 run: 
 	go run ./cmd/app
 
-## db/psql: connect to the database using psql
-.PHONY: db/psql
-db/psql:
+## psql: connect to the database using psql
+.PHONY: psql
+psql:
 	sudo -u production_snippets psql
 
-## db/migrations/new name=$1: create a new database migration
-.PHONY: db/migrations/new
-db/migrations/new:
+## migrations.new name=$1: create a new database migration
+.PHONY: migrations.new
+migrations.new:
 	@echo 'Creating migration files for ${name}...'
-	migrate create -seq -ext=.sql -dir=./migrations ${name}
+	migrate create -seq -ext=.sql -dir=../migrations ${name}
 
-## db/migrations/up: apply all up database migrations
-.PHONY: db/migrations/up
-db/migrations/up: confirm
+## migrations.up: apply all up database migrations
+.PHONY: migrations.up
+migrations.up: confirm
 	@echo 'Running up migrations...'
-	migrate -path ./migrations -database ${GREENLIGHT_DB_DSN} up
+	migrate -path ../migrations -database ${PROD_SNIP_DB_DSN} up
+
+## migrations.down: apply all up database migrations
+.PHONY: migrations.down
+migrations.down: confirm
+	@echo 'Running down migrations...'
+	migrate -path ../migrations -database ${PROD_SNIP_DB_DSN} down
+
+## migrations.force version=$1: do force migrations
+.PHONY: migrations.force
+migrations.force: confirm
+	@echo 'Running force migrations version ${version}.'
+	migrate -path ../migrations -database postgres://production_snippets:486464@localhost:5432/production_snippets force ${version}
+
 
 #=====================================#
 # QUALITY CONTROL #
