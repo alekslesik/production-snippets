@@ -6,19 +6,14 @@ import (
 	"production-snippets/internal/logging"
 )
 
-// @title Swagger Example API
+// @title Production site snippets whith docker, zerologer, psql
 // @version 1.0
-// @description This is a sample server Petstore server.
-// @termsOfService http://swagger.io/terms/
 
-// @contact.name API Support
-// @contact.url http://www.swagger.io/support
-// @contact.email support@swagger.io
+// @contact.name Aleksandr Lesik 
+// @contact.url https://github.com/alekslesik
+// @contact.email alekslesik@gmail.com
 
-// @license.name Apache 2.0
-// @license.url http://www.apache.org/licenses/LICENSE-2.0.html
-
-// @host petstore.swagger.io
+// @host http://bitrix.fvds.ru/
 // @BasePath /v2
 
 func main() {

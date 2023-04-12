@@ -26,7 +26,7 @@ func NewProductStorage(client PostgreSQLClient, logger *logging.Logger) ProductS
 
 const (
 	scheme = "public"
-	table = "product"
+	table  = "product"
 )
 
 func (s *ProductStorage) All(ctx context.Context) ([]model.Prooduct, error) {
@@ -62,17 +62,17 @@ func (s *ProductStorage) All(ctx context.Context) ([]model.Prooduct, error) {
 		p := model.Prooduct{}
 
 		err := rows.Scan(
-			&p.ID, 
-			&p.Name, 
-			&p.Descrition, 
-			&p.Price, 
+			&p.ID,
+			&p.Name,
+			&p.Descrition,
+			&p.Price,
 			&p.CurrencyId,
 			&p.Rating,
-			&p.ImageId, 
-			&p.CreatedAt, 
+			&p.ImageId,
+			&p.CreatedAt,
 			&p.UpdatedAt,
 		)
-		
+
 		if err != nil {
 			s.logger.Error().Msgf("%v", err)
 			log.Error().Msgf("%v", err)

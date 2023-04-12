@@ -7,7 +7,6 @@ import (
 	"github.com/jackc/pgx/v4"
 )
 
-
 type PostgreSQLClient interface {
 	Begin(context.Context) (pgx.Tx, error)
 	BeginFunc(ctx context.Context, f func(pgx.Tx) error) error
