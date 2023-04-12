@@ -33,9 +33,7 @@ type App struct {
 }
 
 // Return new instance of app
-func NewApp(config *config.Config, ctx context.Context) (App, error) {
-	logger := logging.LoggerFromContext(ctx)
-
+func NewApp(config *config.Config, logger *logging.Logger) (App, error) {
 	logger.Info().Msg("Router initializing")
 	router := chi.NewRouter()
 
@@ -65,7 +63,7 @@ func NewApp(config *config.Config, ctx context.Context) (App, error) {
 	productStorage := storage.NewProductStorage(pgClient, logger)
 	all, err := productStorage.All(context.Background())
 	if err != nil {
-		logger.Fatal().Err(err)
+		log.Err(err)
 	}
 
 	log.Debug().Msgf("%v", all)

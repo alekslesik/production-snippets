@@ -1,7 +1,6 @@
 package main
 
 import (
-	"context"
 	"production-snippets/internal/app"
 	"production-snippets/internal/config"
 	"production-snippets/internal/logging"
@@ -26,14 +25,11 @@ func main() {
 	cfg := config.GetConfig()
 	logger := logging.GetLogger(cfg)
 
-	ctx := logging.ContextWithLogger(context.Background(), logger)
-
-	// a, err := app.NewApp(cfg, &logger)
-	a, err := app.NewApp(cfg, ctx)
+	a, err := app.NewApp(cfg, &logger)
 	if err != nil {
-		logging.LoggerFromContext(ctx).Fatal().Err(err)
+		logger.Fatal().Err(err)
 	}
 
-	logging.LoggerFromContext(ctx).Info().Msg("Running application")
+	logger.Info().Msg("Running application")
 	a.Run()
 }

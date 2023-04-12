@@ -44,7 +44,7 @@ CREATE TABLE public.product
     name TEXT NOT NULL,
     descrition TEXT NOT NULL,
     price BIGINT,
-currency_id INT REFERENCES public.currency(id),
+    currency_id INT,
     rating INT,
     category_id INT REFERENCES public.category(id),
     specification JSONB,
