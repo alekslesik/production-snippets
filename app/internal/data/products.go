@@ -25,8 +25,7 @@ func (p *ProductModel) GetAll() ([]Product, error) {
 	allProducts := make([]Product, 0)
 
 	// SELECT * FROM products;
-	err := p.Find(&allProducts).Error
-	if err != nil {
+	if err := p.Find(&allProducts).Error; err != nil {
 		return nil, err
 	}
 
