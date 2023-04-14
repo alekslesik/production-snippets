@@ -1,0 +1,21 @@
+{
+	"folders": [
+		{
+			"path": "../../.."
+		}
+	],
+	"settings": {
+		"sqltools.connections": [
+			{
+				"previewLimit": 50,
+				"server": "localhost",
+				"port": 5432,
+				"driver": "PostgreSQL",
+				"name": "Production Snippets",
+				"database": "production_snippets",
+				"username": "production_snippets",
+				"password": "486464"
+			}
+		]
+	}
+}
