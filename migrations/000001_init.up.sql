@@ -37,10 +37,13 @@ CREATE TABLE public.category
 );
 
 -- products --
-CREATE TABLE public.product
+CREATE TABLE public.products
 (
     -- on default generetated in db --
-    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    id BIGINT NOT NULL DEFAULT nextval('gorm_mobiles_id_seq'::regclass),
+    created_at TIMESTAMPTZ DEFAULT NOW(),
+    updated_at TIMESTAMPTZ DEFAULT NOW(),
+    deleted_at TIMESTAMPTZ,
     name TEXT NOT NULL,
     descrition TEXT NOT NULL,
     price BIGINT,
@@ -49,8 +52,6 @@ CREATE TABLE public.product
     category_id INT REFERENCES public.category(id),
     specification JSONB,
     image_id UUID,
-    created_at TIMESTAMPTZ DEFAULT NOW(),
-    updated_at TIMESTAMPTZ DEFAULT NOW(),
     CONSTRAINT positive_price CHECK (price > 0),
     CONSTRAINT valid_rating CHECK (rating <= 5)
 );

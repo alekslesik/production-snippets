@@ -6,10 +6,10 @@ import (
 	"production-snippets/internal/logging"
 )
 
-// @title Production site snippets whith docker, zerologer, psql
+// @title Production site snippets whith docker, zerologer, psql, GORM
 // @version 1.0
 
-// @contact.name Aleksandr Lesik 
+// @contact.name Aleksandr Lesik
 // @contact.url https://github.com/alekslesik
 // @contact.email alekslesik@gmail.com
 

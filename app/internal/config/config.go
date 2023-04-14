@@ -30,11 +30,7 @@ type Config struct {
 		Compress   bool   `env:"LOG_COMPRESS" env-default:"true"`
 	}
 	PostgreSQL struct {
-		Username string `env:"PSQL_USERNAME" env-default:"production_snippets"`
-		Password string `env:"PSQL_PASSWORD" env-default:"486464"`
-		Host     string `env:"PSQL_HOST" env-default:"localhost"`
-		Port     string `env:"PSQL_PORT" env-default:"5432"`
-		Database string `env:"PSQL_DATABASE" env-default:"production_snippets"`
+		DSN string `env:"PROD_SNIP_DB_DSN" env-default:"postgres://production_snippets:486464@localhost:5432/production_snippets"`
 	}
 
 	IsDebug       bool `env:"IS_DEBUG" env-default:"false"`

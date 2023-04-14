@@ -43,7 +43,7 @@ migrations.up: confirm
 
 ## migrations.down: apply all up database migrations
 .PHONY: migrations.down
-migrations.down: confirm
+migrations.down:
 	@echo 'Running down migrations...'
 	migrate -path ../migrations -database ${PROD_SNIP_DB_DSN} down
 

@@ -1,3 +1,5 @@
-DROP TABLE IF EXISTS currency;
-DROP TABLE IF EXISTS product;
-DROP TABLE IF EXISTS category;
+BEGIN;
+DROP TABLE IF EXISTS products cascade;
+DROP TABLE IF EXISTS currency cascade;
+DROP TABLE IF EXISTS category cascade;
+COMMIT;
