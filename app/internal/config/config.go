@@ -1,19 +1,34 @@
 package config
 
 import (
-	"log"
+	"flag"
+	"os"
 	"sync"
+	"time"
+
+	"github.com/rs/zerolog/log"
 
 	"github.com/ilyakaznacheev/cleanenv"
 )
 
 // Create config struct
 type Config struct {
-	Listen struct {
-		Type       string `env:"LISTEN_TYPE" env-default:"port" env-description:"Port or Sock"`
-		BindIP     string `env:"BIND_IP" env-default:"0.0.0.0"`
-		Port       string `env:"PORT" env-default:"10000"`
-		SocketFile string `env:"SOCKET_FILE" env-default:"app.sock"`
+	IsDebug       bool `env:"IS_DEBUG" env-default:"false"`
+	IsDevelopment bool `env:"IS_DEV" env-default:"true"`
+	HTTP          struct {
+		IP           string        `yaml:"ip" env:"HTTP_IP"`
+		Port         int           `yaml:"ip" env:"HTTP_PORT"`
+		ReadTimeOut  time.Duration `yaml:"ip" env:"HTTP_READ_TIMEOUT"`
+		WriteTimeOut time.Duration `yaml:"ip" env:"HTTP_WRITE_TIMEOUT"`
+		CORS         struct {
+			AllowedMethods     []string `yaml:"allowed_methods" env:"HTTP_CORS_ALLOWED_METHODS"`
+			AllowCredentials   bool     `yaml:"allow_credentials" env:"HTTP_CORS_ALLOW_CREDENTIALS"`
+			AllowedOrigins     []string `yaml:"allowed_origins" env:"HTTP_CORS_ALLOWED_ORIGINS"`
+			AllowedHeaders     []string `yaml:"allowed_headers"   env:"HTTP_CORS_ALLOWED_HEADERS"`
+			OptionsPassthrough bool     `yaml:"options_passthrough" env:"HTTP_CORS_OPTIONS_PASSTHROUGH"`
+			ExposedHeaders     []string `yaml:"exposed_headers" env:"HTTP_CORS_EXPOSED_HEADERS"`
+			Debug              bool     `yaml:"debug" env:"HTTP_CORS_DEBUG"`
+		} `yaml:"cors"`
 	}
 	AppConfig struct {
 		LogLevel  string
@@ -32,24 +47,42 @@ type Config struct {
 	PostgreSQL struct {
 		DSN string `env:"PROD_SNIP_DB_DSN" env-default:"postgres://production_snippets:486464@localhost:5432/production_snippets"`
 	}
-
-	IsDebug       bool `env:"IS_DEBUG" env-default:"false"`
-	IsDevelopment bool `env:"IS_DEV" env-default:"true"`
 }
 
+const (
+	EnvConfigPathName  = "CONFIG_PATH"
+	FlagConfigPathName = "config"
+)
+
+var configPath string
 var instance *Config
 var once sync.Once
 
 // Return instance of config
 func GetConfig() *Config {
 	once.Do(func() {
+
+		flag.StringVar(&configPath, FlagConfigPathName, "configs/config.local.yaml", "this is app config file")
+		flag.Parse()
+
+		if configPath == "" {
+			configPath = os.Getenv(EnvConfigPathName)
+		}
+
+		if configPath == "" {
+			log.Fatal().Msg("config path is required")
+		}
+
+		log.Info().Msg("Config init")
+
 		instance = &Config{}
 
 		if err := cleanenv.ReadEnv(instance); err != nil {
-			helpText := "Monolith Note System"
+			helpText := "Production snippets"
 			help, _ := cleanenv.GetDescription(instance, &helpText)
-			log.Print(help)
-			log.Fatal(err)
+			
+			log.Info().Msg(help)
+			log.Fatal().Err(err)
 		}
 	})
 

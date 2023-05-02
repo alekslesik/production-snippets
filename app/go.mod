@@ -25,7 +25,6 @@ require (
 	github.com/swaggo/files/v2 v2.0.0 // indirect
 	golang.org/x/crypto v0.6.0 // indirect
 	golang.org/x/text v0.7.0 // indirect
-	gopkg.in/natefinch/lumberjack.v2 v2.2.1 // indirect
 )
 
 require (
@@ -41,10 +40,10 @@ require (
 	github.com/mailru/easyjson v0.7.7 // indirect
 	github.com/mattn/go-colorable v0.1.13 // indirect
 	github.com/mattn/go-isatty v0.0.18 // indirect
-	github.com/natefinch/lumberjack v2.0.0+incompatible
 	github.com/swaggo/http-swagger/example/go-chi v0.0.0-20230327134356-bc837951e6c7
 	github.com/swaggo/http-swagger/v2 v2.0.1
 	github.com/swaggo/swag v1.8.11 // indirect
+	golang.org/x/sync v0.1.0
 	golang.org/x/sys v0.6.0 // indirect
 	golang.org/x/tools v0.7.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
