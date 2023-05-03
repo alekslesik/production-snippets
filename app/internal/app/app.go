@@ -128,6 +128,7 @@ func NewApp(config *config.Config, logger *logging.Logger) (App, error) {
 	return app, nil
 }
 
+
 // The openDB() function returns a *gorm.DB
 func openDB(cfg *config.Config) (*gorm.DB, error) {
 	db, err := gorm.Open(postgres.Open(cfg.PostgreSQL.DSN), &gorm.Config{})
